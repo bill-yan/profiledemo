@@ -1,0 +1,14 @@
+spring:
+  resources:
+    static-locations: classpath:/static/
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+server:
+  port: 9977
+graphql:
+  servlet:
+    mapping: /graphql
+    enabled: true
+    corsEnabled: true
