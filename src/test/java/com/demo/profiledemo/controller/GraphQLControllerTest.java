@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class GraphQLControllerTest {
+    private static final String QUERY_JSON_FORMAT = "{\"query\":\"%s\",\"variables\":\"\",\"operationName\":null}";
 
     @Autowired
     private MockMvc mockmvc;
@@ -41,18 +42,47 @@ public class GraphQLControllerTest {
 
     @Test
     public void queryShouldWork() throws Exception {
-        final String json = "{\"query\":\"{\\n userById(id:1) {\\n "
-                + "  fullName\\n  jobTitle\\n  defaultLocale {\\n   locale\\n  }\\n "
-                + "  timezone {\\n  \\tid\\n   name\\n  }\\n  emails {\\n   id\\n   email\\n   primaryEmail\\n  }\\n  "
-                + " phones {\\n   id\\n   number\\n   primaryPhone\\n  }\\n }\\n}\", "
-                + "\"variables\":\"\",\"operationName\":null}";
+        final String query = "{\\n"
+                + "  listAllEnabledLocales {\\n"
+                + "    id\\n"
+                + "    name\\n"
+                + "    locale\\n"
+                + "  }\\n"
+                + "  listAllTimezones{\\n"
+                + "    id\\n"
+                + "    name\\n"
+                + "    \\n"
+                + "  }\\n"
+                + " userById(id:1) {\\n"
+                + "  fullName\\n"
+                + "  jobTitle\\n"
+                + "  defaultLocale {\\n"
+                + "   locale\\n"
+                + "  }\\n"
+                + "  timezone {\\n"
+                + "   id\\n"
+                + "   name\\n"
+                + "  }\\n"
+                + "  emails {\\n"
+                + "   id\\n"
+                + "   email\\n"
+                + "   primaryEmail\\n"
+                + "  }\\n"
+                + "  phones {\\n"
+                + "   id\\n"
+                + "   number\\n"
+                + "   primaryPhone\\n"
+                + "  }\\n"
+                + " }\\n"
+                + "}\\n";
+        final String json = String.format(QUERY_JSON_FORMAT, query);
         ok(json);
     }
 
     @Test
     public void createMailShouldWork() throws Exception {
         final String mutation = "{\\n createEmail(newEmail:\\n  {email:\\\"abc@abc.com\\\",\\n   notificationEnabled:true,\\n   user:{id:1}\\n  }\\n ){\\n  id\\n  email\\n  primaryEmail\\n }\\n}";
-        final String json = String.format("{\"query\":\"%s\",\"variables\":\"\",\"operationName\":null}", mutation);
+        final String json = String.format(QUERY_JSON_FORMAT, mutation);
         ok(json);
     }
 }
