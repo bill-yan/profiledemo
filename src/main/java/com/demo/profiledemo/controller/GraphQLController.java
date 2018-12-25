@@ -14,6 +14,7 @@ import io.leangen.graphql.metadata.strategy.query.AnnotatedResolverBuilder;
 import io.leangen.graphql.metadata.strategy.query.PublicResolverBuilder;
 import io.leangen.graphql.metadata.strategy.value.jackson.JacksonValueMapperFactory;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,11 +50,15 @@ public class GraphQLController {
     }
 
     @PostMapping("/graphql")
-    public ResponseEntity<Map<String, Object>> handleQuery(@RequestBody Map<String, String> request) {
-        ExecutionResult executionResult = graphQL.execute(ExecutionInput.newExecutionInput()
+    public ResponseEntity<Map<String, Object>> handleRequest(@RequestBody Map<String, String> request,
+            HttpServletRequest raw) {
+        ExecutionInput input = ExecutionInput.newExecutionInput()
                 .query(request.get("query"))
                 .operationName(request.get("operationName"))
-                .build());
+                .context(raw)
+                .build();
+        log.info("handleRequest:{}", input);
+        ExecutionResult executionResult = graphQL.execute(input);
         return ResponseEntity.ok(executionResult.toSpecification());
     }
 }
